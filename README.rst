@@ -22,12 +22,14 @@ Base on weigh of each server your defined in configuration file, rbalancer will 
 REQUEST (to rbalancer) 
 
 ::
+    
     GET /img/front_shadow.jpeg HTTP/1.1
     Host: img.org.domain.cdn.com
 
 RESPONSE (from rbalancer) 
 
 ::
+
     HTTP/1.1 302 Found
     Location: img1.org.domain.cdn.com/img/front_shadow.jpeg 
 

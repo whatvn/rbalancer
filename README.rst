@@ -2,7 +2,7 @@ rbalancer
 ============
 
 *rbalancer is a simple HTTP load balancer using HTTP 302 redirect response with round-robin and weighted random support built on* ``tornado``.
-*rbalancer can perform health check for server in balancer list, when a server went down, rbalancer will automatic re-balance request to alive servers.*
+*rbalancer can perform health check on server in balancer list, when a server went down, rbalancer will automatic re-balance request to alive servers.*
 *When dead one goes up, it will be added to cluster and serving request likes normal* 
 
 Example usage
@@ -22,14 +22,14 @@ Base on weigh of each server your defined in configuration file, rbalancer will 
 REQUEST (to rbalancer) 
 
 ::
-  GET /img/front_shadow.jpeg HTTP/1.1
-  Host: img.org.domain.cdn.com
+    GET /img/front_shadow.jpeg HTTP/1.1
+    Host: img.org.domain.cdn.com
 
 RESPONSE (from rbalancer) 
 
 ::
-  HTTP/1.1 302 Found
-  Location: img1.org.domain.cdn.com/img/front_shadow.jpeg 
+    HTTP/1.1 302 Found
+    Location: img1.org.domain.cdn.com/img/front_shadow.jpeg 
 
 
 you can also view stats of rbalancer using URL: http://rbalancer_domain_name/stats . Stats of rbalancer shows how much request each server in cluster receive, how many requests/s it's serving, which servers was down. 

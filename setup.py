@@ -16,8 +16,7 @@ if os.access('/etc', os.W_OK) and not os.path.exists(os.path.join('/etc', 'rbala
 datafiles.append(('/etc/init.d', ['init/rbalancer']))
 
 with open('README.rst') as file:
-    long_description = file.read()
-		print long_description 
+	long_description = file.read()
 
 setup(
     data_files = datafiles,

@@ -158,7 +158,7 @@ class Redirector(BaseHandler):
 					t = threading.Thread(target=health_check, args=(k,)) 
 					t.start() 
 					if k in dead_servers:
-						logging.critical(ctime() + ': ' + k + ' was down') 
+						logging.error(ctime() + ': ' + k + ' was down') 
 						servers.pop(k) 
 				last_check += 5
 			else:

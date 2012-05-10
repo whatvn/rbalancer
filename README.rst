@@ -7,7 +7,7 @@ rbalancer
 
 Example usage
 ============
-If you have a farm servers to serve static file, and you want to load balancing between them, ofcouse if you have problem with LVS ldirector, (We used to have 3 LVS server to load balance our video streaming farm, when switching to rbalancer, we just need one 2 cores server with 200 MB ram needed)  rbalancer will be your right choice.
+If you have a farm servers to serve static file, and you want to load balancing between them, of course just once you have problem with LVS ldirector, (We used to have 3 LVS server to load balance our video streaming farm, when switching to rbalancer, we just need one 2 cores server with 200 MB ram usage)  rbalancer will be your right choice.
 
 Rbalancer server has original domain: img.org.domain.cdn.com, a img file on your site will have url img.org.domain.cdn.com/img/front_shadow.jpeg. 
 
@@ -22,12 +22,14 @@ Base on weigh of each server your defined in configuration file, rbalancer will 
 REQUEST (to rbalancer) 
 
 ::
+    
     GET /img/front_shadow.jpeg HTTP/1.1
     Host: img.org.domain.cdn.com
 
 RESPONSE (from rbalancer) 
 
 ::
+
     HTTP/1.1 302 Found
     Location: img1.org.domain.cdn.com/img/front_shadow.jpeg 
 

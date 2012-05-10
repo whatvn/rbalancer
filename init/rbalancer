@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+#
+#       rbalancer init script 
+#       
+#       Copyright 2012 Hung. Nguyen Van <hungnv@opensource.com.vn>
+#       
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
+
+
+PID=/tmp/rbalancer.pid
+PYTHON=/usr/bin/python 
+DAEMON=/usr/bin/rbalancer 
+
+[ ! -f $DAEMON ] && printf "Program is not exist\n" && exit 2
+ 
+function _start() {
+   printf "Starting Redirector...."
+   $PYTHON $DAEMON 
+   sleep 1
+   printf "Done.\n"
+   }
+
+function _stop() {
+   printf "Stopping Redirector...."
+   if ps aux | grep -w `cat $PID` | grep -v grep > /dev/null ; then
+   	kill -9 `cat $PID`
+   	sleep 1
+   	printf "Done.\n"
+   else
+   	printf "Service is not started.\n"
+   fi
+}
+
+function _restart() {
+   _stop
+   sleep 1
+   _start
+   } 
+
+case "$1" in
+   start)
+      _start 
+   ;;
+   stop)
+      _stop
+   ;;
+   restart)
+      _restart 
+   ;;
+   *)
+      printf "Usage: $0 start|stop|restart\n"
+   ;;
+esac 
+
+  
+	
+

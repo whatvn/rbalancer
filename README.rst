@@ -101,6 +101,15 @@ Install *rbalancer* with:
 
     # python setup.py install 
 
+- Modify and rename /etc/rbalancer.conf.default to /etc/rbalancer.conf 
+
+- Start rbalancer 
+
+::
+
+    # /etc/init.d/rbalancer start 
+
+
 
 License
 =======

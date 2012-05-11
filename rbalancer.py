@@ -29,8 +29,8 @@ import sys
 import logging 
 import re 
 import threading 
-from os import getcwd, mkdir
-from os.path import isdir 
+from socket import gaierror, error 
+from os import getcwd
 from time import time, ctime  
 from ConfigParser import SafeConfigParser
 from tornado.options import define, options
@@ -43,10 +43,6 @@ counts = {}
 start_time = last_check = time() 
 constructed_cluster = {} 
 webroot=""
-#if not isdir(LOG_DIR): mkdir(LOG_DIR)
-class NoParsingFilter(logging.Filter):
-	def filter(self, record):
-		return not record.getMessage().startswith('200')
 logger = logging.getLogger('rbalancer')
 hdlr = logging.FileHandler(log_file)
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -78,11 +74,14 @@ def health_check(target):
 		if response.status in accepted_responses:
 			if target in dead_servers: dead_servers.pop(dead_servers.index(target))  
 		else:
-			logger.error(ctime() + ': ' + target + ' is down') 
-			if target not in dead_servers: dead_servers.append(target) 
-	except Exception, e:
-		#logging.critical(ctime() + ': ' + target + ' ' + str(e) )
-		logger.error(ctime() + ': ' + target + ' ' + str(e) )
+			logger.error(ctime() + ': %s is down, HTTP error code is: %s' ) %(target, response.status) 
+			if target not in dead_servers: dead_servers.append(target)
+	#FIXME
+	except gaierror:
+		logger.error(ctime() + ' ' + target + ':Name or service does not known' )   
+		if target not in dead_servers: dead_servers.append(target)
+	except error:
+		logger.error(ctime() + ' ' + target + ': Connection refuse ' ) 
 		if target not in dead_servers: dead_servers.append(target)
 	finally:
 		conn.close() 

@@ -29,7 +29,7 @@ setup(
     author_email = 'hungnv@opensource.com.vn',
     license = 'gpl',
     platforms = 'any',
-    scripts=['sbin/rbalancer'],
+    scripts=['bin/rbalancer'],
     py_modules = [
         'rbalancer'
     ],

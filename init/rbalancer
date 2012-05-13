@@ -23,7 +23,7 @@
 
 PID=/tmp/rbalancer.pid
 PYTHON=/usr/bin/python 
-DAEMON=/usr/sbin/rbalancer 
+DAEMON=/usr/bin/rbalancer 
 
 [ ! -f $DAEMON ] && printf "Program is not exist\n" && exit 2
  

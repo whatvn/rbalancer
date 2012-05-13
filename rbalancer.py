@@ -64,28 +64,28 @@ def init_server():
 
 def health_check(target):  
 	global dead_servers 
+	is_alive = 0
 	p    = re.compile("[a-z0-9-.]*?\.[a-z]+$")
 	domain_tld = p.findall(target)[0]   
-	conn = HTTPConnection(domain_tld, timeout = 1) 
+	conn = HTTPConnection(domain_tld, timeout = 3) 
 	try:
 		accepted_responses = (404, 302, 304, 301, 200) 
 		conn.request('HEAD', '/') 
 		response = conn.getresponse() 
 		if response.status in accepted_responses:
+			is_alive = 1
 			if target in dead_servers: dead_servers.pop(dead_servers.index(target))  
 		else:
 			logger.error(ctime() + ': %s is down, HTTP error code is: %s' ) %(target, response.status) 
-			if target not in dead_servers: dead_servers.append(target)
 	#FIXME
 	except gaierror:
 		logger.error(ctime() + ' ' + target + ':Name or service does not known' )   
-		if target not in dead_servers: dead_servers.append(target)
 	except error:
 		logger.error(ctime() + ' ' + target + ': Connection refuse ' ) 
-		if target not in dead_servers: dead_servers.append(target)
 	finally:
 		conn.close() 
-		
+	if is_alive == 0:
+		if target not in dead_servers: dead_servers.append(target)
 
 def get_configuration(f):
 	"""Use configparser module to parse configuration file

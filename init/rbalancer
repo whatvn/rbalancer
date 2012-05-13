@@ -28,14 +28,14 @@ DAEMON=/usr/bin/rbalancer
 [ ! -f $DAEMON ] && printf "Program is not exist\n" && exit 2
  
 function _start() {
-   printf "Starting Redirector...."
+   printf "Starting rbalancer...."
    $PYTHON $DAEMON 
    sleep 1
    printf "Done.\n"
    }
 
 function _stop() {
-   printf "Stopping Redirector...."
+   printf "Stopping rbalancer...."
    if ps aux | grep -w `cat $PID` | grep -v grep > /dev/null ; then
    	kill -9 `cat $PID`
    	sleep 1

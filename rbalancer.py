@@ -67,25 +67,28 @@ def health_check(target):
 	is_alive = 0
 	p    = re.compile("[a-z0-9-.]*?\.[a-z]+$")
 	domain_tld = p.findall(target)[0]   
-	conn = HTTPConnection(domain_tld, timeout = 3) 
+	accepted_responses = (404, 302, 304, 301, 200) 
 	try:
-		accepted_responses = (404, 302, 304, 301, 200) 
+		conn = HTTPConnection(domain_tld, timeout = 3) 
 		conn.request('HEAD', '/') 
 		response = conn.getresponse() 
 		if response.status in accepted_responses:
 			is_alive = 1
-			if target in dead_servers: dead_servers.pop(dead_servers.index(target))  
 		else:
 			logger.error(ctime() + ': %s is down, HTTP error code is: %s' ) %(target, response.status) 
 	#FIXME
 	except gaierror:
-		logger.error(ctime() + ' ' + target + ':Name or service does not known' )   
+		#logger.error(ctime() + ' ' + target + ':Name or service does not known' )   
+		is_alive = 1
 	except error:
 		logger.error(ctime() + ' ' + target + ': Connection refuse ' ) 
 	finally:
 		conn.close() 
-	if is_alive == 0:
-		if target not in dead_servers: dead_servers.append(target)
+	if is_alive == 0 and target not in dead_servers:
+		dead_servers.append(target)
+	if is_alive == 1 and target in dead_servers: 
+		dead_servers.pop(dead_servers.index(target)) 
+
 
 def get_configuration(f):
 	"""Use configparser module to parse configuration file
@@ -143,6 +146,7 @@ class Redirector(BaseHandler):
 	def get(self, _path):
 		servers = {}
 		global last_check  
+		global dead_servers 
 		self.request.host = self.request.host.split(':')[0] 
 		if handle_servers.has_key(self.request.host):
 			balance_list = handle_servers[self.request.host]
@@ -150,21 +154,17 @@ class Redirector(BaseHandler):
 				if len(balance_list[i]) > 2 :
 					continue 
 				servers[balance_list[i][0]] = int(balance_list[i][1])
-
 			check_list = servers.copy() 
-			if (time() - last_check) > 5:
+			if (time() - last_check) > 30:
 				for k, v in check_list.iteritems():
 					t = threading.Thread(target=health_check, args=(k,)) 
 					t.start() 
-					if k in dead_servers:
-						logging.error(ctime() + ': ' + k + ' was down') 
-						servers.pop(k) 
 				last_check += 5
-			else:
-				for k in range(len(dead_servers)):
-					if servers.has_key(dead_servers[k]): servers.pop(dead_servers[k]) 
+			for k in range(len(dead_servers)):
+				if servers.has_key(dead_servers[k]): servers.pop(dead_servers[k]) 
 			if len(servers.values()) < 1:
-				logger.error('No server available to serve request for ' + self.request.host) 
+				#logger.error('No server available to serve request for ' + self.request.host) 
+				last_check -= 5
 				raise tornado.web.HTTPError(502, 'No available server') 
 			server = random_weighted(servers) 
 			try:
@@ -174,6 +174,7 @@ class Redirector(BaseHandler):
 			_path = self.request.uri 
 			if self.get_argument('debug', None)  != None:
 				self.write('<b>' + server + _path + '</b>')
+				self.finish() 
 			else:
 				self.redirect(server + _path)  
 		else:
@@ -209,7 +210,8 @@ def main():
         (r'/(.*)', Redirector),
     ])
 	http_server = tornado.httpserver.HTTPServer(application)
-	http_server.listen(options.port)
+	http_server.bind(options.port)
+	http_server.start(0) 
 	tornado.ioloop.IOLoop.instance().start()
 
 

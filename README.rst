@@ -1,5 +1,7 @@
 rbalancer
 ============
+* This thing is deprecated, please use my py-balancer, it does the samething, but much faster, and easier.
+
 
 *rbalancer is a simple HTTP load balancer using HTTP 302 redirect response with round-robin and weighted random support built on* ``tornado``.
 *rbalancer can perform health check on server in balancer list, when a server went down, rbalancer will automatic re-balance request to alive servers.*
